@@ -19,16 +19,42 @@ function install(; julia::String=joinpath(Sys.BINDIR, Base.julia_exename()),
                    force::Bool=false)
     install_dir = normpath(joinpath(@__DIR__, "..", "jlpkg"))
     jlpkg_scriptfile = joinpath(install_dir, "jlpkg.jl")
-    exec_scriptfile = joinpath(install_dir, command)
+    jlpkg_script = """
+        #!/usr/bin/env bash
+        exec $(julia) $(join(julia_flags, ' ')) '$(jlpkg_scriptfile)' "\$@"
+        """
+    h = hash(jlpkg_script)
+    exec_scriptfile = joinpath(install_dir, string("jlpkg", '-', h))
     open(exec_scriptfile, "w") do f
-        print(f,"""
-            #!/usr/bin/env bash
-            exec $(julia) $(join(julia_flags, ' ')) '$(jlpkg_scriptfile)' "\$@"
-            """)
+        print(f, jlpkg_script)
     end
-    chmod(exec_scriptfile, 0x00000000000081fd) # results in -rwxrwxr-x (chmod +x file)
+    chmod(exec_scriptfile, 0o0100775) # equivalent to -rwxrwxr-x (chmod +x exec_scriptfile)
+    link = joinpath(dir, command)
+    force && rm(link)
+    if ispath(link) || islink(link)
+        error("file `$link` already exists; use `jlpkg.install(force=true)` to overwrite.")
+    end
     mkpath(dir)
-    symlink(exec_scriptfile, joinpath(dir, command))
+    symlink(exec_scriptfile, link)
+    if Sys.which(command) === nothing
+        @warn """
+              `Sys.which(\"$(command)\")` returns `nothing`, meaning that `command`
+              can not be found in PATH. Either make sure that `$(dir)` is in PATH,
+              or manually add a symlink from a directory in PATH to the installed
+              program file.
+              Path to installed program:
+                  $(exec_scriptfile)
+              """
+    elseif realpath(Sys.which(command)) !== realpath(exec_scriptfile)
+        @warn """
+              `Sys.which(\"$(command)\")` points to a different program than the one
+              just installed. Please check your PATH.
+              `Sys.which(\"$(command)\")`:
+                  $(Sys.which(command))
+              Path to installed program:
+                  $(exec_scriptfile)
+              """
+    end
     return
 end
 
