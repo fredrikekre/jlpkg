@@ -1,7 +1,7 @@
 module jlpkg
 
 """
-    install(; kwargs...)
+    jlpkg.install(; kwargs...)
 
 Install the command line interface.
 

@@ -3,25 +3,37 @@ if isempty(ARGS) || "--help" in ARGS
     isempty(ARGS) && println("No input arguments, showing help:\n")
     printstyled("NAME\n"; bold=true)
     println("""
-        jlpkg - Command line interface for Pkg, Julia's package manager
+           jlpkg - A command line interface (CLI) for Pkg, Julia's package manager.
     """)
     printstyled("SYNOPSIS\n"; bold=true)
     println("""
-        jlpkg [switches] <pkg-args>...
+           jlpkg [--options] <pkg-args>...
     """)
     printstyled("OPTIONS\n"; bold=true)
     println("""
-        <pkg-args>...
-            Arguments to the Pkg REPL mode.
+           <pkg-args>...
+               Arguments to the Pkg REPL mode.
+               See https://julialang.github.io/Pkg.jl/v1/repl/ for documentation
+               of the syntax and the available commands.
 
-        --project[=path]
-            Project for Pkg manipulations.
+           --project[=path]
+               Set the home project/environment.
+               Equivalent to Julia's `--project` switch.
 
-        --update
-            Update package registries.
+           --update
+               Update package registries.
 
-        --help
-            Show this message.""")
+           --help
+               Show this message.
+    """)
+    printstyled("EXAMPLES\n"; bold=true)
+    print("""
+           · Add the Example package to the package environment located at `path`:
+               \$ jlpkg --project=path add Example
+
+           · Update package registries and add the JSON package:
+               \$ jlpkg --update add JSON
+    """)
     exit(0)
 end
 
