@@ -1,0 +1,27 @@
+## Documentation: http://docs.travis-ci.com/user/languages/julia/
+language: julia
+os:
+  - linux
+  - osx
+julia:
+  - 1.0
+  - 1.1
+  - nightly
+# matrix:
+#   allow_failures:
+#     - julia: nightly
+branches:
+  only:
+    - master
+    - /^v\d+\.\d+(\.\d+)?(-\S*)?$/
+after_success:
+  - if [[ $TRAVIS_JULIA_VERSION = 1.1 ]] && [[ $TRAVIS_OS_NAME = linux ]]; then
+      julia --project=test/coverage -e 'using Pkg; Pkg.instantiate();
+          using Coverage;
+          cov = [Codecov.process_folder(); Codecov.process_folder("jlpkg")]
+          Codecov.submit(cov)';
+    fi
+notifications:
+  email: false
+git:
+  depth: 99999999
