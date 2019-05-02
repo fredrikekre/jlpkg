@@ -3,7 +3,7 @@ using jlpkg, Test, Pkg, Pkg.TOML
 const flags = ["--color=yes", "--startup-file=no", "-q",
     "--code-coverage=$(["none", "user", "all"][Base.JLOptions().code_coverage+1])"]
 
-mktempdir(pwd()) do tmpdir
+mktempdir(@__DIR__) do tmpdir
     withenv("PATH" => tmpdir * ':' * get(ENV, "PATH", "")) do
         # Installation
         jlpkg.install(dir=tmpdir)
@@ -13,6 +13,11 @@ mktempdir(pwd()) do tmpdir
         @test realpath(Sys.which("jlpkg")) ==
               realpath(Sys.which("pkg")) ==
               realpath(joinpath(tmpdir, "jlpkg"))
+        @test_logs((:warn, r"can not be found in PATH"),
+            jlpkg.install(command="cmd-not-in-path", dir=joinpath(tmpdir, "dir-not-in-path")))
+        mktempdir(tmpdir) do tmpdir2; withenv("PATH" => get(ENV, "PATH", "") * ':' * tmpdir2) do
+            @test_logs (:warn, r"points to a different program") jlpkg.install(dir=tmpdir2)
+        end end
         # Usage
         @test success(`jlpkg --update --project=$tmpdir add Example=7876af07-990d-54b4-ab0e-23690620f79a`)
         project = TOML.parsefile(joinpath(tmpdir, "Project.toml"))
