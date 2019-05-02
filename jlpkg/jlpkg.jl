@@ -1,6 +1,6 @@
 # parse --help option
 if isempty(ARGS) || "--help" in ARGS
-    println("No input arguments, showing help:\n")
+    isempty(ARGS) && println("No input arguments, showing help:\n")
     printstyled("NAME\n"; bold=true)
     println("""
         jlpkg - Command line interface for Pkg, Julia's package manager

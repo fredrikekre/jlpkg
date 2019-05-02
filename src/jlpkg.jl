@@ -18,7 +18,7 @@ Install the command line interface.
 function install(; julia::String=joinpath(Sys.BINDIR, Base.julia_exename()),
                    command::String="jlpkg",
                    dir::String=joinpath(homedir(), "bin"),
-                   julia_flags=["--color=yes", "--startup-file=no", "-q"],
+                   julia_flags::Vector{String}=["--color=yes", "--startup-file=no", "-q"],
                    force::Bool=false)
     install_dir = normpath(joinpath(@__DIR__, "..", "jlpkg"))
     jlpkg_scriptfile = joinpath(install_dir, "jlpkg.jl")
