@@ -11,6 +11,9 @@ Install the command line interface.
  - `command`: name of the command, defaults to `jlpkg`.
  - `dir`: writable directory (available in PATH) for the executable,
    defaults to `~/.julia/bin`.
+ - `julia_flags`: vector with command line flags for the julia executable,
+   defaults to `["--color=yes", "--startup-file=no", "-q"]`.
+ - `force`: boolean used to remove any existing commands.
 """
 function install(; julia::String=joinpath(Sys.BINDIR, Base.julia_exename()),
                    command::String="jlpkg",
