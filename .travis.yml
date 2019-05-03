@@ -17,9 +17,7 @@ branches:
 after_success:
   - if [[ $TRAVIS_JULIA_VERSION = 1.1 ]] && [[ $TRAVIS_OS_NAME = linux ]]; then
       julia --project=test/coverage -e 'using Pkg; Pkg.instantiate();
-          using Coverage;
-          cov = [Codecov.process_folder(); Codecov.process_folder("jlpkg")];
-          Codecov.submit(cov)';
+          using Coverage; Codecov.submit(Codecov.process_folder())';
     fi
 notifications:
   email: false

@@ -3,5 +3,4 @@
 *.jl.mem
 *.DS_Store
 /Manifest.toml
-/jlpkg/
 /test/coverage/Manifest.toml
