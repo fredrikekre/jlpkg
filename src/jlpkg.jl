@@ -20,20 +20,29 @@ function install(; julia::String=joinpath(Sys.BINDIR, Base.julia_exename()),
                    destdir::String=joinpath(DEPOT_PATH[1], "bin"),
                    julia_flags::Vector{String}=["--color=yes", "--startup-file=no", "-q"],
                    force::Bool=false)
+    Sys.iswindows() && (command *= ".cmd")
     exec = joinpath(destdir, command)
     if ispath(exec) && !force
         error("file `$(exec)` already exists; use `jlpkg.install(force=true)` to overwrite.")
     end
     mkpath(destdir)
     open(exec, "w") do f
-        print(f, """
-            #!/usr/bin/env bash
-            #=
-            exec $(julia) $(join(julia_flags, ' ')) "\${BASH_SOURCE[0]}" "\$@"
-            =#
-            """)
-        open(abspath(@__DIR__, "cli.jl"), "r") do cli
-            write(f, cli)
+        if Sys.iswindows()
+            # TODO: Find a way to embed the script in the file
+            print(f, """
+                @ECHO OFF
+                $(julia) $(join(julia_flags, ' ')) $(abspath(@__DIR__, "cli.jl")) %*
+                """)
+        else # unix
+            print(f, """
+                #!/usr/bin/env bash
+                #=
+                exec $(julia) $(join(julia_flags, ' ')) "\${BASH_SOURCE[0]}" "\$@"
+                =#
+                """)
+            open(abspath(@__DIR__, "cli.jl"), "r") do cli
+                write(f, cli)
+            end
         end
     end
     chmod(exec, 0o0100775) # equivalent to -rwxrwxr-x (chmod +x exec)
