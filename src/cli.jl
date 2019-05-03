@@ -23,6 +23,9 @@ if isempty(ARGS) || "--help" in ARGS
            --update
                Update package registries.
 
+           --version
+               Show jlpkg and julia version numbers.
+
            --help
                Show this message.
     """)
@@ -34,6 +37,12 @@ if isempty(ARGS) || "--help" in ARGS
            · Update package registries and add the JSON package:
                \$ jlpkg --update add JSON
     """)
+    exit(0)
+end
+
+# parse --version option
+if "--version" in ARGS
+    println("jlpkg version 0.1.0, julia version $(VERSION)")
     exit(0)
 end
 

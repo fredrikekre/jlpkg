@@ -30,6 +30,9 @@ OPTIONS
        --update
            Update package registries.
 
+       --version
+           Show jlpkg and julia version numbers.
+
        --help
            Show this message.
 
