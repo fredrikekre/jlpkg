@@ -56,17 +56,17 @@ from the Julia REPL:
 ```
 help?> jlpkg.install
 
-    install(; kwargs...)
+    jlpkg.install(; kwargs...)
 
 Install the command line interface.
 
 Keyword arguments:
 
- · julia: path to julia executable, defaults to the current running julia.
+ · command: name of the executable command, defaults to jlpkg.
 
- · command: name of the command, defaults to jlpkg.
+ · julia: path to julia executable, defaults to the path of the current running julia.
 
- · dir: writable directory (available in PATH) for the executable,
+ · destdir: writable directory (available in PATH) for the executable,
    defaults to ~/.julia/bin.
 
  · julia_flags: vector with command line flags for the julia executable,
