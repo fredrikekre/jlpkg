@@ -51,10 +51,19 @@ if "--version" in ARGS
     exit(0)
 end
 
+# Determine the index of the first Pkg REPL command
+const commands = ["package", "test", "help", "instantiate", "remove", "rm", "add",
+    "develop", "dev", "free", "pin", "build", "resolve", "activate", "update", "up",
+    "generate", "precompile", "status", "st", "gc", "preview", "registry"]
+const first_cmd_idx = something(findfirst(x -> x in commands || startswith(x, '?'), ARGS), length(ARGS))
+
+# Arguments to delete before running the Pkg REPL
+const del_idx = Int[]
+
 # parse --project option
 let
     r = r"^--project(=(.+))?$"
-    idx = findall(x->match(r, x) !== nothing, ARGS)
+    idx = filter!(x -> x <= first_cmd_idx, findall(x->match(r, x) !== nothing, ARGS))
     if isempty(idx)
         Base.HOME_PROJECT[] = nothing
     else
@@ -65,7 +74,7 @@ let
             Base.HOME_PROJECT[] = m.captures[2]
         end
     end
-    deleteat!(ARGS, idx)
+    append!(del_idx, idx)
 end
 
 # Load Pkg; circumvent user-modified LOAD_PATH
@@ -79,15 +88,16 @@ end
 
 # parse --update option
 let
-    idx = findall(==("--update"), ARGS)
+    idx = filter!(x -> x <= first_cmd_idx, findall(==("--update"), ARGS))
     if isempty(idx)
         Pkg.UPDATED_REGISTRY_THIS_SESSION[] = true
     end
-    deleteat!(ARGS, idx)
+    append!(del_idx, idx)
 end
 
 # Run Pkg REPL mode with whats left in ARGS
 try
+    deleteat!(ARGS, unique!(sort!(del_idx)))
     Pkg.REPLMode.pkgstr(join(ARGS, " "))
     exit(0)
 catch err
