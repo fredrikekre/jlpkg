@@ -35,6 +35,9 @@ mktempdir(@__DIR__) do tmpdir
         end
         project = TOML.parsefile(joinpath(tmpdir, "Project.toml"))
         @test project["deps"]["JSON"] == "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
+        withenv("JULIA_LOAD_PATH" => tmpdir) do # Should work even though Pkg is not in LOAD_PATH
+            @test success(`$(test_cmd) --update st -m`)
+        end
         # Output
         stdout, stderr = joinpath.(tmpdir, ("stdout.txt", "stderr.txt"))
         @test success(pipeline(`$(test_cmd) --help`, stdout=stdout, stderr=stderr))
