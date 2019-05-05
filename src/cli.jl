@@ -12,9 +12,11 @@ if isempty(ARGS) || "--help" in ARGS
     printstyled("OPTIONS\n"; bold=true)
     println("""
            <pkg-args>...
-               Arguments to the Pkg REPL mode.
-               See https://julialang.github.io/Pkg.jl/v1/repl/ for documentation
-               of the syntax and the available commands.
+               Arguments to the Pkg REPL mode. Execute the `help` command
+               (e.g. `jlpkg help`) to list all available commands, and execute
+               `jlpkg ?cmd` (or `jlpkg help cmd`) to show detailed help for a
+               specific command. See https://julialang.github.io/Pkg.jl/v1/repl/
+               for documentation of the syntax and the available commands.
 
            --project[=path]
                Set the home project/environment.
@@ -36,6 +38,9 @@ if isempty(ARGS) || "--help" in ARGS
 
            · Update package registries and add the JSON package:
                \$ jlpkg --update add JSON
+
+           · Show the help for the `add` Pkg REPL command:
+               \$ jlpkg ?add
     """)
     exit(0)
 end
