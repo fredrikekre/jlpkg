@@ -21,6 +21,7 @@ function install(; julia::String=joinpath(Sys.BINDIR, Base.julia_exename()),
                    julia_flags::Vector{String}=["--color=yes", "--startup-file=no", "-q"],
                    force::Bool=false)
     Sys.iswindows() && (command *= ".cmd")
+    destdir = abspath(expanduser(destdir))
     exec = joinpath(destdir, command)
     if ispath(exec) && !force
         error("file `$(exec)` already exists; use `jlpkg.install(force=true)` to overwrite.")
