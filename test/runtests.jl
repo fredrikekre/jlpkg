@@ -1,7 +1,7 @@
 using jlpkg, Test, Pkg, Pkg.TOML
 
 const root = joinpath(dirname(dirname(pathof(jlpkg))))
-const test_cmd = ```$(Base.julia_cmd()) --color=yes --startup-file=no -q
+const test_cmd = ```$(Base.julia_cmd()) $(jlpkg.default_julia_flags)
     --code-coverage=$(["none", "user", "all"][Base.JLOptions().code_coverage+1])
     $(joinpath(root, "src", "cli.jl"))```
 const jlpkg_version = match(r"^version = \"(\d.\d.\d)\"$"m,
@@ -35,6 +35,9 @@ mktempdir(@__DIR__) do tmpdir
         end
         project = TOML.parsefile(joinpath(tmpdir, "Project.toml"))
         @test project["deps"]["JSON"] == "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
+        @test success(`$(test_cmd) --update --project=$tmpdir add https://github.com/JuliaLang/Example.jl`)
+        project = TOML.parsefile(joinpath(tmpdir, "Project.toml"))
+        @test project["deps"]["Example"] == "7876af07-990d-54b4-ab0e-23690620f79a"
         withenv("JULIA_LOAD_PATH" => tmpdir) do # Should work even though Pkg is not in LOAD_PATH
             @test success(`$(test_cmd) --update st -m`)
         end

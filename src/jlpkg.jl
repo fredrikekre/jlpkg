@@ -1,5 +1,7 @@
 module jlpkg
 
+const default_julia_flags = ["--color=yes", "--startup-file=no", "-q", "--compile=min", "-O0"]
+
 """
     jlpkg.install(; kwargs...)
 
@@ -18,7 +20,7 @@ Install the command line interface.
 function install(; julia::String=joinpath(Sys.BINDIR, Base.julia_exename()),
                    command::String="jlpkg",
                    destdir::String=joinpath(DEPOT_PATH[1], "bin"),
-                   julia_flags::Vector{String}=["--color=yes", "--startup-file=no", "-q", "--compile=min", "-O0"],
+                   julia_flags::Vector{String}=default_julia_flags,
                    force::Bool=false)
     Sys.iswindows() && (command *= ".cmd")
     destdir = abspath(expanduser(destdir))
