@@ -53,14 +53,14 @@ EXAMPLES
 
 First install `jlpkg` from the Pkg REPL:
 ```
-pkg> pkg add https://github.com/fredrikekre/jlpkg.git
+pkg> add jlpkg
 ```
-then install the command line interface as
+then install the command line interface with
 ```julia
 julia> import jlpkg; jlpkg.install()
 ```
 For available configuration, see the documentation for `jlpkg.install`,
-from the Julia REPL:
+e.g. from the Julia REPL:
 ```
 help?> jlpkg.install
 
