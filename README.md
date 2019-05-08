@@ -15,11 +15,11 @@ NAME
        jlpkg - A command line interface (CLI) for Pkg, Julia's package manager.
 
 SYNOPSIS
-       jlpkg [--options] <pkg-args>...
+       jlpkg [--options] <pkg-cmds>...
 
 OPTIONS
-       <pkg-args>...
-           Arguments to the Pkg REPL mode. Execute the `help` command
+       <pkg-cmds>...
+           Commands to the Pkg REPL mode. Execute the `help` command
            (e.g. `jlpkg help`) to list all available commands, and execute
            `jlpkg ?cmd` (or `jlpkg help cmd`) to show detailed help for a
            specific command. See https://julialang.github.io/Pkg.jl/v1/repl/
