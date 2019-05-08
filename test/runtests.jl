@@ -55,5 +55,8 @@ mktempdir(@__DIR__) do tmpdir
         @test !success(pipeline(`$(test_cmd)  --project=$tmpdir rm`, stdout=stdout, stderr=stderr))
         @test occursin("PkgError:", read(stdout, String))
         @test isempty(read(stderr, String))
+        @test !success(pipeline(`$(test_cmd)  --project=$tmpdir st --help`, stdout=stdout, stderr=stderr))
+        @test occursin("PkgError:", read(stdout, String))
+        @test isempty(read(stderr, String))
     end
 end
