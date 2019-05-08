@@ -4,7 +4,7 @@
 |:----------------------------------------------------------------------------------------------- |
 | [![][travis-img]][travis-url] [![][appveyor-img]][appveyor-url] [![][codecov-img]][codecov-url] |
 
-A command line interface (CLI) for [Pkg][pkg-url], Julia's package manager.
+A command line interface (CLI) to [Pkg][pkg-url], Julia's package manager.
 
 ## Usage
 
@@ -12,7 +12,7 @@ Output of `jlpkg --help`:
 ```
 $ jlpkg --help
 NAME
-       jlpkg - A command line interface (CLI) for Pkg, Julia's package manager.
+       jlpkg - command line interface (CLI) to Pkg, Julia's package manager
 
 SYNOPSIS
        jlpkg [--options] <pkg-cmds>...

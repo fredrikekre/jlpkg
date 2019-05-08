@@ -3,7 +3,7 @@ if isempty(ARGS) || "--help" in ARGS
     isempty(ARGS) && println("No input arguments, showing help:\n")
     printstyled("NAME\n"; bold=true)
     println("""
-           jlpkg - A command line interface (CLI) for Pkg, Julia's package manager.
+           jlpkg - command line interface (CLI) to Pkg, Julia's package manager
     """)
     printstyled("SYNOPSIS\n"; bold=true)
     println("""
