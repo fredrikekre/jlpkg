@@ -32,9 +32,9 @@ mktempdir(@__DIR__) do tmpdir
         @test project["deps"]["Example"] == "7876af07-990d-54b4-ab0e-23690620f79a"
         cd(tmpdir) do
             @test success(`$(test_cmd) --project add JSON=682c06a0-de6a-54ab-a142-c8b1cf79cde6`)
+            project = TOML.parsefile(joinpath(tmpdir, "Project.toml"))
+            @test project["deps"]["JSON"] == "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
         end
-        project = TOML.parsefile(joinpath(tmpdir, "Project.toml"))
-        @test project["deps"]["JSON"] == "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
         @test success(`$(test_cmd) --update --project=$tmpdir add https://github.com/JuliaLang/Example.jl`)
         project = TOML.parsefile(joinpath(tmpdir, "Project.toml"))
         @test project["deps"]["Example"] == "7876af07-990d-54b4-ab0e-23690620f79a"
