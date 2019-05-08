@@ -78,7 +78,7 @@ Keyword arguments:
    defaults to ~/.julia/bin.
 
  · julia_flags: vector with command line flags for the julia executable,
-   defaults to ["--color=yes", "--startup-file=no", "-q"].
+   defaults to ["--color=yes", "--startup-file=no", "-q", "--compile=min", "-O0"]
 
  · force: boolean used to remove any existing commands.
 ```
