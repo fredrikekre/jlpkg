@@ -1,8 +1,5 @@
 # Determine the index of the first Pkg REPL command
-const commands = ["package", "test", "help", "instantiate", "remove", "rm", "add",
-    "develop", "dev", "free", "pin", "build", "resolve", "activate", "update", "up",
-    "generate", "precompile", "status", "st", "gc", "preview", "registry"]
-const first_cmd_idx = something(findfirst(x -> x in commands || startswith(x, '?'), ARGS), length(ARGS)+1)
+const first_cmd_idx = something(findfirst(x -> !startswith(x, "--"), ARGS), length(ARGS)+1)
 const JLPKG_ARGS = ARGS[1:first_cmd_idx-1]
 const PKG_REPL_ARGS = ARGS[first_cmd_idx:end]
 
