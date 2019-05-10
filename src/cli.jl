@@ -28,7 +28,7 @@ if isempty(ARGS) || "--help" in JLPKG_ARGS
                Equivalent to Julia's `--project` switch.
 
            --update
-               Update package registries.
+               Allow the subsequent commands to update package registries.
 
            --version
                Show jlpkg and julia version numbers.
