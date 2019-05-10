@@ -3,7 +3,7 @@ const first_cmd_idx = something(findfirst(x -> !startswith(x, "--"), ARGS), leng
 const JLPKG_ARGS = ARGS[1:first_cmd_idx-1]
 const PKG_REPL_ARGS = ARGS[first_cmd_idx:end]
 
-# parse --help option
+# Parse --help option
 if isempty(ARGS) || "--help" in JLPKG_ARGS
     isempty(ARGS) && println("No input arguments, showing help:\n")
     printstyled("NAME\n"; bold=true)
@@ -50,13 +50,13 @@ if isempty(ARGS) || "--help" in JLPKG_ARGS
     exit(0)
 end
 
-# parse --version option
+# Parse --version option
 if "--version" in JLPKG_ARGS
     println("jlpkg version 1.0.0, julia version $(VERSION)")
     exit(0)
 end
 
-# parse --project option
+# Parse --project option
 let
     r = r"^--project(=(.+))?$"
     idx = findlast(x->match(r, x) !== nothing, JLPKG_ARGS)
@@ -81,12 +81,23 @@ finally
     append!(empty!(Base.LOAD_PATH), LOAD_PATH)
 end
 
-# parse --update option
+# Parse --update option
 let
     idx = findlast(==("--update"), JLPKG_ARGS)
     if idx === nothing
         Pkg.UPDATED_REGISTRY_THIS_SESSION[] = true
     end
+end
+
+# Swap out --compile=min and --optimize=0 if we are running tests
+# since we don't want that to propagate to the test-subprocess,
+# and packages expect, and should be, tested with default options.
+if "test" in PKG_REPL_ARGS
+    o = Base.JLOptions()
+    o′ = Base.JLOptions((x === :compile_enabled ? Int8(1) :
+        x === :opt_level ? Int8(2) :
+        getfield(o, x) for x in fieldnames(Base.JLOptions))...)
+    unsafe_store!(cglobal(:jl_options, Base.JLOptions), o′)
 end
 
 # Run Pkg REPL mode with PKG_REPL_ARGS

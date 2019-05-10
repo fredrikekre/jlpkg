@@ -61,5 +61,9 @@ mktempdir(@__DIR__) do tmpdir
         @test !success(pipeline(`$(test_cmd)  --project=$tmpdir st --help`, stdout=stdout, stderr=stderr))
         @test occursin("PkgError:", read(stdout, String))
         @test isempty(read(stderr, String))
+        # Test that --compile and --optimize options are default, see issue #1
+        # by running jlpkg test suite with jlpkg --project test on CI
+        @test Base.JLOptions().opt_level === Int8(2)
+        @test Base.JLOptions().compile_enabled === Int8(1)
     end
 end
