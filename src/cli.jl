@@ -52,7 +52,7 @@ end
 
 # Parse --version option
 if "--version" in JLPKG_ARGS
-    println("jlpkg version 1.0.0, julia version $(VERSION)")
+    println("jlpkg version 1.0.1, julia version $(VERSION)")
     exit(0)
 end
 
