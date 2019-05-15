@@ -28,12 +28,26 @@ mktempdir(@__DIR__) do tmpdir
         @test Sys.iswindows() ? success(`cmd /c pkg --update st`) : success(`pkg --update st`)
         @test Sys.iswindows() ? success(`cmd /c pkg --help`) : success(`pkg --help`)
         @test success(`$(test_cmd) --update --project=$tmpdir add Example=7876af07-990d-54b4-ab0e-23690620f79a`)
+        withenv("JULIA_PROJECT" => tmpdir) do
+            @test success(`$(test_cmd) add JSON=682c06a0-de6a-54ab-a142-c8b1cf79cde6`)
+        end
         project = TOML.parsefile(joinpath(tmpdir, "Project.toml"))
         @test project["deps"]["Example"] == "7876af07-990d-54b4-ab0e-23690620f79a"
+        @test project["deps"]["JSON"] == "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
+        @test success(`$(test_cmd) --project=$tmpdir rm Example JSON`)
+        project = TOML.parsefile(joinpath(tmpdir, "Project.toml"))
+        @test isempty(get(project, "deps", []))
         cd(tmpdir) do
-            @test success(`$(test_cmd) --project add JSON=682c06a0-de6a-54ab-a142-c8b1cf79cde6`)
+            @test success(`$(test_cmd) --project add Example=7876af07-990d-54b4-ab0e-23690620f79a`)
+            withenv("JULIA_PROJECT" => "@.") do
+                @test success(`$(test_cmd) add JSON=682c06a0-de6a-54ab-a142-c8b1cf79cde6`)
+            end
             project = TOML.parsefile(joinpath(tmpdir, "Project.toml"))
+            @test project["deps"]["Example"] == "7876af07-990d-54b4-ab0e-23690620f79a"
             @test project["deps"]["JSON"] == "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
+            @test success(`$(test_cmd) --project rm Example JSON`)
+            project = TOML.parsefile(joinpath(tmpdir, "Project.toml"))
+            @test isempty(get(project, "deps", []))
         end
         @test success(`$(test_cmd) --update --project=$tmpdir add https://github.com/JuliaLang/Example.jl`)
         project = TOML.parsefile(joinpath(tmpdir, "Project.toml"))

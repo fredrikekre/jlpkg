@@ -60,16 +60,21 @@ end
 let
     r = r"^--project(=(.+))?$"
     idx = findlast(x->match(r, x) !== nothing, JLPKG_ARGS)
-    if idx === nothing
-        Base.HOME_PROJECT[] = nothing
-    else
+    if idx === nothing # --project not given
+        project = get(ENV, "JULIA_PROJECT", nothing)
+    else # --project given
         m = match(r, JLPKG_ARGS[idx[end]])
         if m.captures[2] === nothing
-            Base.HOME_PROJECT[] = Base.current_project()
+            project = "@."
         else # m.captures !== nothing
-            Base.HOME_PROJECT[] = m.captures[2]
+            project = m.captures[2]
         end
     end
+    Base.HOME_PROJECT[] =
+        project === nothing ? nothing :
+        project == "" ? nothing :
+        project == "@." ? Base.current_project() :
+        abspath(expanduser(project))
 end
 
 # Load Pkg; circumvent user-modified LOAD_PATH
