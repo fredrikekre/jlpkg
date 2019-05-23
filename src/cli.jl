@@ -112,6 +112,10 @@ end
 # Run Pkg REPL mode with PKG_REPL_ARGS
 try
     Pkg.REPLMode.pkgstr(join(PKG_REPL_ARGS, " "))
+    if !isempty(PKG_REPL_ARGS) && (PKG_REPL_ARGS[1] == "help" || startswith(PKG_REPL_ARGS[1], '?'))
+        # The help command uses `display` which does not add a trailing \n
+        println()
+    end
     exit(0)
 catch err
     if err isa Pkg.Types.PkgError
