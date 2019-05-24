@@ -7,8 +7,9 @@ const test_cmd = ```$(Base.julia_cmd()) $(jlpkg.default_julia_flags)
 const jlpkg_version = match(r"^version = \"(\d+.\d+.\d+)\"$"m,
         read(joinpath(root, "Project.toml"), String)).captures[1]
 
-mktempdir(@__DIR__) do tmpdir
-    withenv("PATH" => tmpdir * (Sys.iswindows() ? ';' : ':') * get(ENV, "PATH", "")) do
+mktempdir() do tmpdir; mktempdir() do depot
+    withenv("PATH" => tmpdir * (Sys.iswindows() ? ';' : ':') * get(ENV, "PATH", ""),
+            "JULIA_DEPOT_PATH" => depot, "JULIA_PKG_DEVDIR" => nothing) do
         # Installation
         jlpkg.install(destdir=tmpdir)
         @test_throws ErrorException jlpkg.install(destdir=tmpdir)
@@ -22,7 +23,7 @@ mktempdir(@__DIR__) do tmpdir
         mktempdir(tmpdir) do tmpdir2; withenv("PATH" => get(ENV, "PATH", "") * (Sys.iswindows() ? ';' : ':') * tmpdir2) do
             @test_logs (:warn, r"points to a different program") jlpkg.install(destdir=tmpdir2)
         end end
-        # Usage
+        # Basic usage
         @test Sys.iswindows() ? success(`cmd /c jlpkg --update st`) : success(`jlpkg --update st`)
         @test Sys.iswindows() ? success(`cmd /c jlpkg --help`) : success(`jlpkg --help`)
         @test Sys.iswindows() ? success(`cmd /c pkg --update st`) : success(`pkg --update st`)
@@ -55,6 +56,32 @@ mktempdir(@__DIR__) do tmpdir
         withenv("JULIA_LOAD_PATH" => tmpdir) do # Should work even though Pkg is not in LOAD_PATH
             @test success(`$(test_cmd) --update st -m`)
         end
+        # Smoke test all Pkg commands in interpreted mode
+        @test success(`$(test_cmd) activate foo`)
+        @test success(`$(test_cmd) add SpecialFunctions=276daf66-3868-5448-9aa4-cd146d93841b`)
+        @test success(`$(test_cmd) build SpecialFunctions`)
+        @test success(`$(test_cmd) develop Example`)
+        @test success(`$(test_cmd) free Example`)
+        @test success(`$(test_cmd) remove SpecialFunctions`)
+        @test success(`$(test_cmd) gc`)
+        @test success(`$(test_cmd) pin Example`)
+        @test success(`$(test_cmd) resolve`)
+        @test success(`$(test_cmd) instantiate`)
+        @test success(`$(test_cmd) precompile`)
+        @test success(`$(test_cmd) preview up`)
+        @test success(`$(test_cmd) test Example`)
+        @test success(`$(test_cmd) update`)
+        @test success(`$(test_cmd) status`)
+        @test success(`$(test_cmd) help`)
+        cd(tmpdir) do
+            @test success(`$(test_cmd) generate HelloWorld`)
+        end
+        if VERSION > v"1.1"
+            @test success(`$(test_cmd) registry add https://github.com/fredrikekre/Staging`)
+            @test success(`$(test_cmd) registry status`)
+            @test success(`$(test_cmd) registry update`)
+            @test success(`$(test_cmd) registry remove Staging`)
+        end
         # Output
         stdout, stderr = joinpath.(tmpdir, ("stdout.txt", "stderr.txt"))
         @test success(pipeline(`$(test_cmd) --help`, stdout=stdout, stderr=stderr))
@@ -80,4 +107,4 @@ mktempdir(@__DIR__) do tmpdir
         @test Base.JLOptions().opt_level === Int8(2)
         @test Base.JLOptions().compile_enabled === Int8(1)
     end
-end
+end end
