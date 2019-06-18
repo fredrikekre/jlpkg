@@ -51,6 +51,8 @@ EXAMPLES
 
 ## Installation
 
+### Installing from within Julia
+
 First install `jlpkg` from the Pkg REPL:
 ```
 pkg> add jlpkg
@@ -82,6 +84,19 @@ Keyword arguments:
 
  · force: boolean used to remove any existing commands.
 ```
+
+### Installing by downloading tarball
+
+It is possible to download and extract a prebuilt script with default settings.
+For example, to download the latest release you can run the following
+```bash
+$ curl -L https://github.com/fredrikekre/jlpkg/releases/download/v1.0.3/jlpkg-v1.0.3.tar.gz | \
+  tar -xzC /usr/local/bin
+```
+This will extract the executable script `jlpkg` and place it in `/usr/local/bin`.
+You can of course replace `/usr/local/bin` with any writable folder in your `PATH`.
+When using the prebuilt script it is assumed that `julia` is also in your `PATH`.
+
 
 [pkg-url]: https://github.com/JuliaLang/Pkg.jl
 

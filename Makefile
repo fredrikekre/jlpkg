@@ -4,6 +4,7 @@ ifeq ($(TAG),)
 endif
 	sed -i "s/version = .*/version = \"$(shell echo $(TAG) | cut -c 2-)\"/" Project.toml && \
 	sed -i "s/jlpkg version [[:digit:]].[[:digit:]].[[:digit:]]/jlpkg version $(shell echo $(TAG) | cut -c 2-)/" src/cli.jl && \
+	sed -i "s/\/v[[:digit:]].[[:digit:]].[[:digit:]]\/jlpkg-v[[:digit:]].[[:digit:]].[[:digit:]].tar.gz/\/$(TAG)\/jlpkg-$(TAG).tar.gz/" README.md && \
 	julia --project -e 'using Pkg; Pkg.test()' && \
 	git commit -am "Set version to $(TAG)."
 
