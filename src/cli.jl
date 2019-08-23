@@ -3,9 +3,34 @@ const first_cmd_idx = something(findfirst(x -> !startswith(x, "--"), ARGS), leng
 const JLPKG_ARGS = ARGS[1:first_cmd_idx-1]
 const PKG_REPL_ARGS = ARGS[first_cmd_idx:end]
 
-# Parse --help option
-if isempty(ARGS) || "--help" in JLPKG_ARGS
-    isempty(ARGS) && println("No input arguments, showing help:\n")
+# Parse --version option
+if "--version" in JLPKG_ARGS
+    println("jlpkg version 1.0.3, julia version $(VERSION)")
+    exit(0)
+end
+
+function isvalid(arg)
+    return arg == "--update" || arg == "--version" ||
+           arg == "--help" || startswith(arg, "--project")
+end
+
+# Check input and parse --help option
+if isempty(ARGS) || isempty(PKG_REPL_ARGS) || "--help" in JLPKG_ARGS ||
+        findfirst(!isvalid, JLPKG_ARGS) !== nothing
+    exit_code = 0
+    if !("--help" in JLPKG_ARGS)
+        if isempty(ARGS)
+            println("No input arguments, showing help:\n")
+            exit_code = 1
+        elseif (idx = findfirst(!isvalid, JLPKG_ARGS); idx !== nothing)
+            println("Invalid argument `$(JLPKG_ARGS[idx])`, showing help:\n")
+            exit_code = 1
+        elseif isempty(PKG_REPL_ARGS)
+            println("No Pkg REPL arguments, showing help:\n")
+            exit_code = 1
+        end
+    end
+    # Print help
     printstyled("NAME\n"; bold=true)
     println("""
            jlpkg - command line interface (CLI) to Pkg, Julia's package manager
@@ -47,13 +72,7 @@ if isempty(ARGS) || "--help" in JLPKG_ARGS
            · Show the help for the `add` Pkg REPL command:
                \$ jlpkg ?add
     """)
-    exit(0)
-end
-
-# Parse --version option
-if "--version" in JLPKG_ARGS
-    println("jlpkg version 1.0.3, julia version $(VERSION)")
-    exit(0)
+    exit(exit_code)
 end
 
 # Parse --project option
