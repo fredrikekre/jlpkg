@@ -25,9 +25,13 @@ OPTIONS
            specific command. See https://julialang.github.io/Pkg.jl/v1/repl/
            for documentation of the syntax and the available commands.
 
-       --project[=path]
+       --project[=<path>]
            Set the home project/environment.
            Equivalent to Julia's `--project` switch.
+
+       --julia=<path>
+           Specify path to, or command for, the Julia executable.
+           Overrides the executable set when installing the CLI.
 
        --update
            Allow the subsequent commands to update package registries.

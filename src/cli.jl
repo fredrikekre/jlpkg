@@ -3,6 +3,22 @@ const first_cmd_idx = something(findfirst(x -> !startswith(x, "--"), ARGS), leng
 const JLPKG_ARGS = ARGS[1:first_cmd_idx-1]
 const PKG_REPL_ARGS = ARGS[first_cmd_idx:end]
 
+# Parse --julia option (not supported on Windows)
+if !Sys.iswindows()
+    r = r"^--julia=(.+)$"
+    idx = findlast(x->match(r, x) !== nothing, JLPKG_ARGS)
+    if idx !== nothing
+        julia = match(r, JLPKG_ARGS[idx]).captures[1]
+        deleteat!(ARGS, idx)
+        f = @__FILE__ # JuliaLang/julia #28188
+        cmd = Base.julia_cmd()
+        cmd.exec[1] = julia # swap out the executable
+        filter!(x -> !startswith(x, "-J"), cmd.exec) # filter out incompatible sysimg
+        pipe = pipeline(`$(cmd) $(f) $(ARGS)`; stdout=stdout, stderr=stderr)
+        exit(!success(pipe))
+    end
+end
+
 # Parse --version option
 if "--version" in JLPKG_ARGS
     println("jlpkg version 1.0.3, julia version $(VERSION)")
@@ -48,9 +64,13 @@ if isempty(ARGS) || isempty(PKG_REPL_ARGS) || "--help" in JLPKG_ARGS ||
                specific command. See https://julialang.github.io/Pkg.jl/v1/repl/
                for documentation of the syntax and the available commands.
 
-           --project[=path]
+           --project[=<path>]
                Set the home project/environment.
                Equivalent to Julia's `--project` switch.
+
+           --julia=<path>
+               Specify path to, or command for, the Julia executable.
+               Overrides the executable set when installing the CLI.
 
            --update
                Allow the subsequent commands to update package registries.
