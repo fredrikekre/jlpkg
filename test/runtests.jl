@@ -7,6 +7,22 @@ const test_cmd = ```$(Base.julia_cmd()) $(jlpkg.default_julia_flags)
 const jlpkg_version = match(r"^version = \"(\d+.\d+.\d+)\"$"m,
         read(joinpath(root, "Project.toml"), String)).captures[1]
 
+function download_release(v::VersionNumber)
+    x, y, z = v.major, v.minor, v.patch
+    julia_exec = cd(mktempdir()) do
+        julia = "julia-$(x).$(y).$(z)-linux-x86_64"
+        tarball = "$(julia).tar.gz"
+        sha256 = "julia-$(x).$(y).$(z).sha256"
+        run(`curl -o $(tarball) -L https://julialang-s3.julialang.org/bin/linux/x64/$(x).$(y)/$(tarball)`)
+        run(`curl -o $(sha256) -L https://julialang-s3.julialang.org/bin/checksums/$(sha256)`)
+        run(pipeline(`grep $(tarball) $(sha256)`, `sha256sum -c`))
+        mkpath(julia)
+        run(`tar -xzf $(tarball) -C $(julia) --strip-components 1`)
+        return abspath(julia, "bin", "julia")
+    end
+    return julia_exec
+end
+
 mktempdir() do tmpdir; mktempdir() do depot
     withenv("PATH" => tmpdir * (Sys.iswindows() ? ';' : ':') * get(ENV, "PATH", ""),
             "JULIA_DEPOT_PATH" => depot, "JULIA_PKG_DEVDIR" => nothing) do
@@ -55,6 +71,15 @@ mktempdir() do tmpdir; mktempdir() do depot
         @test project["deps"]["Example"] == "7876af07-990d-54b4-ab0e-23690620f79a"
         withenv("JULIA_LOAD_PATH" => tmpdir) do # Should work even though Pkg is not in LOAD_PATH
             @test success(`$(test_cmd) --update st -m`)
+        end
+        # Test --julia flag
+        if Sys.islinux() && get(ENV, "CI", nothing) == "true"
+            v = v"1.1.1"
+            julia11 = download_release(v)
+            stdout, stderr = joinpath.(tmpdir, ("stdout.txt", "stderr.txt"))
+            @test success(pipeline(`$(test_cmd) --julia=$(julia11) --version`, stdout=stdout, stderr=stderr))
+            @test occursin(", julia version $(v)", read(stdout, String))
+            @test isempty(read(stderr, String))
         end
         # Smoke test all Pkg commands in interpreted mode
         @test success(`$(test_cmd) activate foo`)
