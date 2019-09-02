@@ -6,10 +6,10 @@ const PKG_REPL_ARGS = ARGS[first_cmd_idx:end]
 # Parse --julia option (not supported on Windows)
 if !Sys.iswindows()
     r = r"^--julia=(.+)$"
-    idx = findlast(x->match(r, x) !== nothing, JLPKG_ARGS)
+    idx = findlast(x -> match(r, x) !== nothing, JLPKG_ARGS)
     if idx !== nothing
         julia = match(r, JLPKG_ARGS[idx]).captures[1]
-        deleteat!(ARGS, idx)
+        deleteat!(ARGS, findall(x -> match(r, x) !== nothing, JLPKG_ARGS))
         f = @__FILE__ # JuliaLang/julia #28188
         cmd = Base.julia_cmd()
         cmd.exec[1] = julia # swap out the executable
