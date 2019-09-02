@@ -74,11 +74,14 @@ mktempdir() do tmpdir; mktempdir() do depot
         end
         # Test --julia flag
         if Sys.islinux() && get(ENV, "CI", nothing) == "true"
-            v = v"1.1.1"
-            julia11 = download_release(v)
+            julia10 = download_release(v"1.0.4")
+            julia11 = download_release(v"1.1.1")
             stdout, stderr = joinpath.(tmpdir, ("stdout.txt", "stderr.txt"))
             @test success(pipeline(`$(test_cmd) --julia=$(julia11) --version`, stdout=stdout, stderr=stderr))
-            @test occursin(", julia version $(v)", read(stdout, String))
+            @test occursin(", julia version 1.1.1", read(stdout, String))
+            @test isempty(read(stderr, String))
+            @test success(pipeline(`$(test_cmd) --julia=$(julia11) --julia=$(julia10) --version`, stdout=stdout, stderr=stderr))
+            @test occursin(", julia version 1.0.4", read(stdout, String))
             @test isempty(read(stderr, String))
         end
         # Smoke test all Pkg commands in interpreted mode
