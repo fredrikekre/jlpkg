@@ -94,7 +94,7 @@ Keyword arguments:
 It is possible to download and extract a prebuilt script with default settings.
 For example, to download the latest release you can run the following
 ```bash
-$ curl -L https://github.com/fredrikekre/jlpkg/releases/download/v1.1.0/jlpkg-v1.1.0.tar.gz | \
+$ curl -L https://github.com/fredrikekre/jlpkg/releases/download/v1.1.1/jlpkg-v1.1.1.tar.gz | \
   tar -xzC /usr/local/bin
 ```
 This will extract the executable script `jlpkg` and place it in `/usr/local/bin`.
