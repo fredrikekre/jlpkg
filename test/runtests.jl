@@ -83,6 +83,9 @@ mktempdir() do tmpdir; mktempdir() do depot
             @test success(pipeline(`$(test_cmd) --julia=$(julia11) --julia=$(julia10) --version`, stdout=stdout, stderr=stderr))
             @test occursin(", julia version 1.0.4", read(stdout, String))
             @test isempty(read(stderr, String))
+            @test !success(pipeline(`$(test_cmd) --julia=juliafoobar --version`, stdout=stdout, stderr=stderr))
+            @test isempty(read(stdout, String))
+            @test occursin("Error: IOError: could not spawn `juliafoobar", read(stderr, String))
         end
         # Smoke test all Pkg commands in interpreted mode
         @test success(`$(test_cmd) activate foo`)

@@ -16,7 +16,15 @@ if !Sys.iswindows()
         filter!(x -> !startswith(x, "-J"), cmd.exec) # filter out incompatible sysimg
         push!(cmd.exec, "--color=$(Base.have_color ? "yes" : "no")")
         pipe = pipeline(`$(cmd) $(f) $(ARGS)`; stdout=stdout, stderr=stderr)
-        exit(!success(pipe))
+        try
+            exit(!success(pipe))
+        catch err
+            printstyled(stderr, "Error: "; bold=true, color=:red)
+            io = IOBuffer()
+            showerror(io, err)
+            printstyled(stderr, String(take!(io)), '\n'; color=:red)
+            exit(1)
+        end
     end
 end
 
