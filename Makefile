@@ -9,9 +9,11 @@ endif
 	git commit -am "Set version to $(TAG)."
 
 tarball:
+	git checkout $(TAG) && \
 	rm -rf build/ && mkdir build && \
 	julia --project -e 'using jlpkg; jlpkg.install(julia="julia", destdir="build")' && \
 	tar -C build -czf build/jlpkg-$(TAG).tar.gz jlpkg && \
 	rm build/jlpkg && \
 	ghr $(TAG) build/ && \
-	rm -rf build
+	rm -rf build && \
+	git checkout master
