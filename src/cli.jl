@@ -170,7 +170,7 @@ try
 catch err
     if err isa Pkg.Types.PkgError
         printstyled(stderr, "PkgError: "; bold=true, color=:red)
-    elseif err isa Pkg.Types.ResolverError
+    elseif err isa (isdefined(Pkg.Resolve, :ResolverError) ? Pkg.Resolve.ResolverError : Pkg.Types.ResolverError)
         printstyled(stderr, "ResolverError: "; bold=true, color=:red)
     else
         rethrow()
