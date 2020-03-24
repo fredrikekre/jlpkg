@@ -100,6 +100,7 @@ mktempdir() do tmpdir; mktempdir() do depot
         @test success(`$(test_cmd) instantiate`)
         @test success(`$(test_cmd) precompile`)
         @test success(`$(test_cmd) test Example`)
+        @test success(`$(test_cmd) rm Example`)
         @test success(`$(test_cmd) update`)
         @test success(`$(test_cmd) status`)
         @test success(`$(test_cmd) help`)
