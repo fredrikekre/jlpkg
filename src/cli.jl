@@ -128,7 +128,7 @@ let
 end
 
 # Load Pkg; circumvent user-modified LOAD_PATH
-const LOAD_PATH = copy(Base.LOAD_PATH)
+const ORIG_LOAD_PATH = copy(Base.LOAD_PATH)
 try
     push!(empty!(Base.LOAD_PATH), joinpath(Sys.STDLIB, "Pkg"))
     using Pkg
@@ -137,7 +137,7 @@ catch
     printstyled(stderr, "could not load Pkg.\n"; color=:red)
     rethrow()
 finally
-    append!(empty!(Base.LOAD_PATH), LOAD_PATH)
+    append!(empty!(Base.LOAD_PATH), ORIG_LOAD_PATH)
 end
 
 # Parse --update option
