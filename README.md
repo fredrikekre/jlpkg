@@ -36,6 +36,9 @@ OPTIONS
        --update
            Allow the subsequent commands to update package registries.
 
+       --offline
+           Enable Pkg's offline mode (requires Julia 1.5 or later).
+
        --version
            Show jlpkg and julia version numbers.
 

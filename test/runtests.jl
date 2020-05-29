@@ -72,6 +72,8 @@ mktempdir() do tmpdir; mktempdir() do depot
         withenv("JULIA_LOAD_PATH" => tmpdir) do # Should work even though Pkg is not in LOAD_PATH
             @test success(`$(test_cmd) --update st -m`)
         end
+        @test success(`$(test_cmd) --offline --project=$tmpdir rm Example`)
+        @test success(`$(test_cmd) --offline --project=$tmpdir add Example=7876af07-990d-54b4-ab0e-23690620f79a`)
         # Test --julia flag
         if Sys.islinux() && get(ENV, "CI", nothing) == "true"
             julia10 = download_release(v"1.0.4")

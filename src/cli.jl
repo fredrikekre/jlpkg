@@ -35,7 +35,7 @@ if "--version" in JLPKG_ARGS
 end
 
 function isvalid(arg)
-    return arg == "--update" || arg == "--version" ||
+    return arg == "--update" || arg == "--version" || arg == "--offline" ||
            arg == "--help" || startswith(arg, "--project")
 end
 
@@ -85,6 +85,9 @@ if isempty(ARGS) || isempty(PKG_REPL_ARGS) || "--help" in JLPKG_ARGS ||
 
            --update
                Allow the subsequent commands to update package registries.
+
+           --offline
+               Enable Pkg's offline mode (requires Julia 1.5 or later).
 
            --version
                Show jlpkg and julia version numbers.
@@ -142,9 +145,15 @@ end
 
 # Parse --update option
 let
-    idx = findlast(==("--update"), JLPKG_ARGS)
-    if idx === nothing
+    if findlast(==("--update"), JLPKG_ARGS) === nothing
         Pkg.UPDATED_REGISTRY_THIS_SESSION[] = true
+    end
+end
+
+# Parse --offline option
+let
+    if isdefined(Pkg, :offline) && findlast(==("--offline"), JLPKG_ARGS) !== nothing
+        Pkg.offline()
     end
 end
 
