@@ -5,7 +5,7 @@ os:
   - osx
 julia:
   - 1.0
-  - 1.4
+  - 1.5
   - nightly
 # matrix:
 #   allow_failures:
@@ -19,7 +19,7 @@ script:
   - julia --project -e 'using jlpkg; jlpkg.install(command = "jlpkg-ci", destdir = joinpath(pwd(), "bin"))'
   - jlpkg-ci --project test --coverage
 after_success:
-  - if [[ $TRAVIS_JULIA_VERSION = 1.4 ]] && [[ $TRAVIS_OS_NAME = linux ]]; then
+  - if [[ $TRAVIS_JULIA_VERSION = 1.5 ]] && [[ $TRAVIS_OS_NAME = linux ]]; then
       julia --project=test/coverage -e 'using Pkg; Pkg.instantiate();
           using Coverage; Codecov.submit(Codecov.process_folder())';
     fi
