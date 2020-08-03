@@ -123,11 +123,16 @@ let
             project = m.captures[2]
         end
     end
-    Base.HOME_PROJECT[] =
+    project =
         project === nothing ? nothing :
         project == "" ? nothing :
         project == "@." ? Base.current_project() :
         abspath(expanduser(project))
+    if VERSION < v"1.6.0-DEV.398"
+        Base.HOME_PROJECT[] = project
+    else
+        Base.ACTIVE_PROJECT[] = project
+    end
 end
 
 # Load Pkg; circumvent user-modified LOAD_PATH
