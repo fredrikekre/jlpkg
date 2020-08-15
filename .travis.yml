@@ -12,6 +12,7 @@ julia:
 #     - julia: nightly
 branches:
   only:
+    - "fe/coverage"
     - master
     - /^v\d+\.\d+(\.\d+)?(-\S*)?$/
 script:

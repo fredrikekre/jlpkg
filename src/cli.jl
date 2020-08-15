@@ -1,7 +1,20 @@
+const ORIG_LOAD_PATH = copy(Base.LOAD_PATH)
+try
+    push!(empty!(Base.LOAD_PATH), joinpath(Sys.STDLIB, "Pkg"))
+    using Pkg
+catch
+    printstyled(stderr, "Error: "; bold=true, color=:red)
+    printstyled(stderr, "could not load Pkg.\n"; color=:red)
+    rethrow()
+finally
+    append!(empty!(Base.LOAD_PATH), ORIG_LOAD_PATH)
+end
+
+function main()
 # Determine the index of the first Pkg REPL command
-const first_cmd_idx = something(findfirst(x -> !startswith(x, "--"), ARGS), length(ARGS)+1)
-const JLPKG_ARGS = ARGS[1:first_cmd_idx-1]
-const PKG_REPL_ARGS = ARGS[first_cmd_idx:end]
+#=const=# first_cmd_idx = something(findfirst(x -> !startswith(x, "--"), ARGS), length(ARGS)+1)
+#=const=# JLPKG_ARGS = ARGS[1:first_cmd_idx-1]
+#=const=# PKG_REPL_ARGS = ARGS[first_cmd_idx:end]
 
 # Parse --julia option (not supported on Windows)
 if !Sys.iswindows()
@@ -136,17 +149,17 @@ let
 end
 
 # Load Pkg; circumvent user-modified LOAD_PATH
-const ORIG_LOAD_PATH = copy(Base.LOAD_PATH)
-try
-    push!(empty!(Base.LOAD_PATH), joinpath(Sys.STDLIB, "Pkg"))
-    using Pkg
-catch
-    printstyled(stderr, "Error: "; bold=true, color=:red)
-    printstyled(stderr, "could not load Pkg.\n"; color=:red)
-    rethrow()
-finally
-    append!(empty!(Base.LOAD_PATH), ORIG_LOAD_PATH)
-end
+# const ORIG_LOAD_PATH = copy(Base.LOAD_PATH)
+# try
+#     push!(empty!(Base.LOAD_PATH), joinpath(Sys.STDLIB, "Pkg"))
+#     # using Pkg
+# catch
+#     printstyled(stderr, "Error: "; bold=true, color=:red)
+#     printstyled(stderr, "could not load Pkg.\n"; color=:red)
+#     rethrow()
+# finally
+#     append!(empty!(Base.LOAD_PATH), ORIG_LOAD_PATH)
+# end
 
 # Parse --update option
 let
@@ -194,3 +207,7 @@ catch err
     printstyled(stderr, String(take!(io)), '\n'; color=:red)
     exit(1)
 end
+end # main
+
+
+main()
