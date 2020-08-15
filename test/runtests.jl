@@ -5,6 +5,7 @@ const root = joinpath(dirname(dirname(pathof(jlpkg))))
 const test_cmd = ```$(Base.julia_cmd()) $(jlpkg.default_julia_flags)
     --code-coverage=$(["none", "user", "all"][Base.JLOptions().code_coverage+1])
     --compile=yes
+    --color=no
     $(joinpath(root, "src", "cli.jl"))```
 const jlpkg_version = match(r"^version = \"(\d+.\d+.\d+)\"$"m,
         read(joinpath(root, "Project.toml"), String)).captures[1]

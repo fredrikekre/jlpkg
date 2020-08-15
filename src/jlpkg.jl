@@ -1,6 +1,7 @@
 module jlpkg
 
 # --compile=min segfaults Julia 1.0 and the fix can't trivially be backported.
+# --color should be removed for the new LTS due to better defaults in Julia >1.5
 @static if VERSION < v"1.1"
     const default_julia_flags = ["--color=yes", "--startup-file=no", "-q", "-O0"]
 else
