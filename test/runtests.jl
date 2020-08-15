@@ -78,19 +78,24 @@ mktempdir() do tmpdir; mktempdir() do depot
         @test success(`$(test_cmd) --offline --project=$tmpdir rm Example`)
         @test success(`$(test_cmd) --offline --project=$tmpdir add Example=7876af07-990d-54b4-ab0e-23690620f79a`)
         # Test --julia flag
-        if Sys.islinux() && get(ENV, "CI", nothing) == "true"
-            julia10 = download_release(v"1.0.4")
-            julia11 = download_release(v"1.1.1")
+        if !Sys.iswindows()
             stdout, stderr = joinpath.(tmpdir, ("stdout.txt", "stderr.txt"))
-            @test success(pipeline(`$(test_cmd) --julia=$(julia11) --version`, stdout=stdout, stderr=stderr))
-            @test occursin(", julia version 1.1.1", read(stdout, String))
-            @test isempty(read(stderr, String))
-            @test success(pipeline(`$(test_cmd) --julia=$(julia11) --julia=$(julia10) --version`, stdout=stdout, stderr=stderr))
-            @test occursin(", julia version 1.0.4", read(stdout, String))
+            this_julia = joinpath(Sys.BINDIR::String, Base.julia_exename())
+            @test success(pipeline(`$(test_cmd) --julia=$(this_julia) --version`, stdout=stdout, stderr=stderr))
+            @test occursin(string(VERSION), read(stdout, String))
             @test isempty(read(stderr, String))
             @test !success(pipeline(`$(test_cmd) --julia=juliafoobar --version`, stdout=stdout, stderr=stderr))
             @test isempty(read(stdout, String))
             @test occursin("Error: IOError: could not spawn `juliafoobar", read(stderr, String))
+            if Sys.islinux() && get(ENV, "CI", nothing) == "true"
+                julia11 = download_release(v"1.1.1")
+                @test success(pipeline(`$(test_cmd) --julia=$(julia11) --version`, stdout=stdout, stderr=stderr))
+                @test occursin(", julia version 1.1.1", read(stdout, String))
+                @test isempty(read(stderr, String))
+                @test success(pipeline(`$(test_cmd) --julia=$(this_julia) --julia=$(julia11) --version`, stdout=stdout, stderr=stderr))
+                @test occursin(", julia version 1.1.1", read(stdout, String))
+                @test isempty(read(stderr, String))
+            end
         end
         # Smoke test all Pkg commands in interpreted mode
         @test success(`$(test_cmd) activate foo`)
