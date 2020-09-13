@@ -21,7 +21,7 @@ Install the command line interface.
    defaults to `~/.julia/bin`.
  - `julia_flags`: vector with command line flags for the julia executable,
    defaults to `["--color=yes", "--startup-file=no", "-q", "--compile=min", "-O0"]`.
- - `force`: boolean used to remove any existing commands.
+ - `force`: boolean used to overwrite any existing commands.
 """
 function install(; julia::String=joinpath(Sys.BINDIR, Base.julia_exename()),
                    command::String="jlpkg",
@@ -55,6 +55,7 @@ function install(; julia::String=joinpath(Sys.BINDIR, Base.julia_exename()),
         end
     end
     chmod(exec, 0o0100775) # equivalent to -rwxrwxr-x (chmod +x exec)
+    @info "Installed jlpkg to `$(Base.contractuser(exec))`."
     if Sys.which(command) === nothing
         @warn """
               `Sys.which(\"$(command)\")` returns `nothing`, meaning that `command`
@@ -75,6 +76,67 @@ function install(; julia::String=joinpath(Sys.BINDIR, Base.julia_exename()),
               """
     end
     return
+end
+
+"""
+    jlpkg.install_completion(; kwargs...)
+
+Install shell completion for jlpkg. Currently only bash completion is supported.
+
+*Keyword arguments:*
+ - `command`: name of the executable command to be completed, defaults to `jlpkg`.
+ - `destdir`: writable directory to place the completion file in,
+   defaults to `~/.bash_completion.d`.
+ - `rcfile`: shell startup file to source the completion file in,
+   defaults to `~/.bashrc`. If you want to handle sourcing yourself, use `rcfile=nothing`.
+ - `force`: boolean used to overwrite an existing completion file.
+"""
+function install_completion(; command::String="jlpkg",
+                              destdir::String=joinpath(homedir(), ".bash_completion.d"),
+                              rcfile::Union{String,Nothing}=joinpath(homedir(), ".bashrc"),
+                              shell::String="bash",
+                              force::Bool=false)
+    if shell != "bash"
+        throw(ArgumentError("only bash completion is currently supported"))
+    end
+
+    # Install script into destdir
+    fname = "jlpkg-completion.bash"
+    mkpath(destdir)
+    dst = joinpath(destdir, fname)
+    dstc = Base.contractuser(dst)
+    src = joinpath(@__DIR__, fname)
+    if isfile(dst) && !force
+        throw(ArgumentError("destination file `$(dstc)` already exist; use force=true to overwrite."))
+    end
+    src_str = read(src, String)
+    src_str = replace(src_str, r"^complete -F _jlpkg jlpkg$"m => "complete -F _jlpkg $(command)")
+    open(iod -> write(iod, src_str), dst, "w")
+    @info "Installed jlpkg bash completion to `$(dstc)`."
+
+    # Source the file in the rc file
+    if rcfile !== nothing
+        rc = isfile(rcfile) ? read(rcfile, String) : ""
+        rcc = Base.contractuser(rcfile)
+        header = """
+
+        # Bash completion for jlpkg
+        # See https://github.com/fredrikekre/jlpkg for details."""
+        if occursin(header, rc)
+            @info "`$(rcc)` already appears to source `$(dstc)`, skipping modification."
+        else
+            open(rcfile, "a") do io
+                print(io, """
+                $(header)
+                if [[ -f "$(dst)" ]]; then
+                    . "$(dst)"
+                fi
+                """)
+            end
+            @info "Modified `$(rcc)` to source `$(dstc)`."
+        end
+    end
+    return dst
 end
 
 end # module
