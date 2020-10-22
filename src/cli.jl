@@ -162,6 +162,11 @@ let
     end
 end
 
+# Disable automatic precompilation unless user explicitly has asked for it
+if get(ENV, "JULIA_PKG_PRECOMPILE_AUTO", nothing) !== "1"
+    ENV["JULIA_PKG_PRECOMPILE_AUTO"] = "0"
+end
+
 # Swap out --compile=min and --optimize=0 if we are running tests
 # since we don't want that to propagate to the test-subprocess,
 # and packages expect, and should be, tested with default options.
