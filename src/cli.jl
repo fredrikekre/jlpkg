@@ -168,9 +168,9 @@ if get(ENV, "JULIA_PKG_PRECOMPILE_AUTO", nothing) !== "1"
 end
 
 # Swap out --compile=min and --optimize=0 if we are running tests
-# since we don't want that to propagate to the test-subprocess,
-# and packages expect, and should be, tested with default options.
-if "test" in PKG_REPL_ARGS
+# or precompiling since we don't want that to propagate to those subprocesses,
+# and packages expect, and should be, tested/precompiled with default options.
+if "test" in PKG_REPL_ARGS || "precompile" in PKG_REPL_ARGS
     o = Base.JLOptions()
     o′ = Base.JLOptions((x === :compile_enabled ? Int8(1) :
         x === :opt_level ? Int8(2) :
