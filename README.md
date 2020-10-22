@@ -112,7 +112,8 @@ Keyword arguments:
 
  · destdir: writable directory to place the completion file in, defaults to ~/.bash_completion.d.
 
- · rcfile: shell startup file to source the completion file in, defaults to ~/.bashrc. If you want to handle sourcing yourself, use rcfile=nothing.
+ · rcfile: shell startup file to source the completion file in, defaults to ~/.bashrc.
+   If you want to handle sourcing yourself, use rcfile=nothing.
 
  · force: boolean used to overwrite an existing completion file.
 ```
@@ -136,9 +137,9 @@ $ curl -fsSL -o ~/.bash_completion.d/jlpkg-completion.bash \
 ```
 Make sure to source this file in your shell startup file. For example, add the following to `~/.bashrc`:
 ```bash
-# Bash completions for jlpkg
-if [[ -f "~/.bash_completion.d/jlpkg-completions.bash" ]]; then
-    . "~/.bash_completion.d/jlpkg-completions.bash"
+# Bash completion for jlpkg
+if [[ -f ~/.bash_completion.d/jlpkg-completion.bash ]]; then
+    . ~/.bash_completion.d/jlpkg-completion.bash
 fi
 ```
 

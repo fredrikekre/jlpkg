@@ -128,8 +128,8 @@ function install_completion(; command::String="jlpkg",
             open(rcfile, "a") do io
                 print(io, """
                 $(header)
-                if [[ -f "$(dst)" ]]; then
-                    . "$(dst)"
+                if [[ -f $(dstc) ]]; then
+                    . $(dstc)
                 fi
                 """)
             end
