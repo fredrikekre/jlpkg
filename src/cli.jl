@@ -162,6 +162,11 @@ let
     end
 end
 
+# Disable interactivity warning (jlpkg should be used interactively)
+if isdefined(Pkg.REPLMode, :PRINTED_REPL_WARNING)
+    Pkg.REPLMode.PRINTED_REPL_WARNING[] = true
+end
+
 # Disable automatic precompilation unless user explicitly has asked for it
 if get(ENV, "JULIA_PKG_PRECOMPILE_AUTO", nothing) !== "1"
     ENV["JULIA_PKG_PRECOMPILE_AUTO"] = "0"
