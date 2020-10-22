@@ -30,17 +30,17 @@ mktempdir() do tmpdir; mktempdir() do depot
     withenv("PATH" => tmpdir * (Sys.iswindows() ? ';' : ':') * get(ENV, "PATH", ""),
             "JULIA_DEPOT_PATH" => depot, "JULIA_PKG_DEVDIR" => nothing) do
         # Installation
-        jlpkg.install(destdir=tmpdir)
+        @test_logs (:info, r"Installed") jlpkg.install(destdir=tmpdir)
         @test_throws ErrorException jlpkg.install(destdir=tmpdir)
-        jlpkg.install(destdir=tmpdir, force = true)
-        jlpkg.install(command="pkg", destdir=tmpdir)
+        @test_logs (:info, r"Installed") jlpkg.install(destdir=tmpdir, force = true)
+        @test_logs (:info, r"Installed") jlpkg.install(command="pkg", destdir=tmpdir)
         @test realpath(Sys.which("jlpkg" * (Sys.iswindows() ? ".cmd" : ""))) ==
               realpath(joinpath(tmpdir, "jlpkg" * (Sys.iswindows() ? ".cmd" : "")))
         @test realpath(Sys.which("pkg" * (Sys.iswindows() ? ".cmd" : ""))) ==  realpath(joinpath(tmpdir, "pkg" * (Sys.iswindows() ? ".cmd" : "")))
-        @test_logs((:warn, r"can not be found in PATH"),
+        @test_logs((:info, r"Installed"), (:warn, r"can not be found in PATH"),
             jlpkg.install(command="cmd-not-in-path", destdir=joinpath(tmpdir, "dir-not-in-path")))
         mktempdir(tmpdir) do tmpdir2; withenv("PATH" => get(ENV, "PATH", "") * (Sys.iswindows() ? ';' : ':') * tmpdir2) do
-            @test_logs (:warn, r"points to a different program") jlpkg.install(destdir=tmpdir2)
+            @test_logs (:info, r"Installed") (:warn, r"points to a different program") jlpkg.install(destdir=tmpdir2)
         end end
         # Basic usage
         @test Sys.iswindows() ? success(`cmd /c jlpkg --update st`) : success(`jlpkg --update st`)
@@ -161,3 +161,23 @@ mktempdir() do tmpdir; mktempdir() do depot
         @test Base.JLOptions().compile_enabled === Int8(1)
     end
 end end
+
+# Completion installation
+if !Sys.iswindows(); mktempdir() do tmpdir; withenv("HOME" => tmpdir) do
+    # Standard install
+    @test_logs (:info, r"Installed") (:info, r"Modified") jlpkg.install_completion()
+    @test occursin("complete -F _jlpkg jlpkg", read(joinpath(homedir(), ".bash_completion.d", "jlpkg-completion.bash"), String))
+    @test occursin("# Bash completion for jlpkg", read(joinpath(homedir(), ".bashrc"), String))
+    # File exists
+    @test_throws ArgumentError jlpkg.install_completion()
+    @test_logs (:info, r"Installed") (:info, r"appears") jlpkg.install_completion(; force=true)
+    # Non-supported shell
+    @test_throws ArgumentError jlpkg.install_completion(; shell="zsh")
+    # Different paths
+    @test_logs (:info, r"Installed") (:info, r"Modified") jlpkg.install_completion(; destdir=tmpdir, rcfile=joinpath(tmpdir, ".bash_profile"))
+    @test occursin("complete -F _jlpkg jlpkg", read(joinpath(homedir(), "jlpkg-completion.bash"), String))
+    @test occursin("# Bash completion for jlpkg", read(joinpath(homedir(), ".bash_profile"), String))
+    # Different command
+    @test_logs (:info, r"Installed") (:info, r"appears") jlpkg.install_completion(; command="pkg", force=true)
+    @test occursin("complete -F _jlpkg pkg", read(joinpath(homedir(), ".bash_completion.d", "jlpkg-completion.bash"), String))
+end end end

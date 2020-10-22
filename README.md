@@ -89,7 +89,32 @@ Keyword arguments:
  · julia_flags: vector with command line flags for the julia executable,
    defaults to ["--color=yes", "--startup-file=no", "-q", "--compile=min", "-O0"]
 
- · force: boolean used to remove any existing commands.
+ · force: boolean used to overwrite any existing commands.
+```
+
+#### Install shell completion
+
+`jlpkg` supports Bash shell completion. This can be installed by using `jlpkg.install_completion`:
+```julia
+julia> jlpkg.install_completion()
+```
+For available configuration, see the documentation for `jlpkg.install_completion`:
+```
+help?> jlpkg.install_completion
+
+    jlpkg.install_completion(; kwargs...)
+
+Install shell completion for jlpkg. Currently only bash completion is supported.
+
+Keyword arguments:
+
+ · command: name of the executable command to be completed, defaults to jlpkg.
+
+ · destdir: writable directory to place the completion file in, defaults to ~/.bash_completion.d.
+
+ · rcfile: shell startup file to source the completion file in, defaults to ~/.bashrc. If you want to handle sourcing yourself, use rcfile=nothing.
+
+ · force: boolean used to overwrite an existing completion file.
 ```
 
 ### Installing by downloading tarball
@@ -97,12 +122,25 @@ Keyword arguments:
 It is possible to download and extract a prebuilt script with default settings.
 For example, to download the latest release you can run the following
 ```bash
-$ curl -L https://github.com/fredrikekre/jlpkg/releases/download/v1.2.3/jlpkg-v1.2.3.tar.gz | \
+$ curl -fsSL https://github.com/fredrikekre/jlpkg/releases/download/v1.2.3/jlpkg-v1.2.3.tar.gz | \
   tar -xzC /usr/local/bin
 ```
 This will extract the executable script `jlpkg` and place it in `/usr/local/bin`.
 You can of course replace `/usr/local/bin` with any writable folder in your `PATH`.
 When using the prebuilt script it is assumed that `julia` is also in your `PATH`.
+
+The Bash completion file can also be downloaded from the repo. For example:
+```bash
+$ curl -fsSL -o ~/.bash_completion.d/jlpkg-completion.bash \
+  https://raw.githubusercontent.com/fredrikekre/jlpkg/v1.2.3/src/jlpkg-completion.bash
+```
+Make sure to source this file in your shell startup file. For example, add the following to `~/.bashrc`:
+```bash
+# Bash completions for jlpkg
+if [[ -f "~/.bash_completion.d/jlpkg-completions.bash" ]]; then
+    . "~/.bash_completion.d/jlpkg-completions.bash"
+fi
+```
 
 
 [pkg-url]: https://github.com/JuliaLang/Pkg.jl
