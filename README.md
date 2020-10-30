@@ -58,7 +58,12 @@ EXAMPLES
 
 ## Installation
 
-### Installing from within Julia
+There are number of ways to install `jlpkg`:
+ - [Installation from Julia](#Installation-from-Julia)
+ - [Installation from tarball](#Installation-from-tarball)
+ - [Installation using asdf](#Installation-using-asdf)
+
+### Installation from Julia
 
 First install `jlpkg` from the Pkg REPL:
 ```
@@ -118,7 +123,7 @@ Keyword arguments:
  · force: boolean used to overwrite an existing completion file.
 ```
 
-### Installing by downloading tarball
+### Installation from tarball
 
 It is possible to download and extract a prebuilt script with default settings.
 For example, to download the latest release you can run the following
@@ -142,6 +147,12 @@ if [[ -f ~/.bash_completion.d/jlpkg-completion.bash ]]; then
     . ~/.bash_completion.d/jlpkg-completion.bash
 fi
 ```
+
+### Installation using `asdf`
+
+It is possible to install `jlpkg` using the [`asdf` version manager](https://asdf-vm.com) using the
+[`asdf-jlpkg`](https://github.com/fredrikekre/asdf-jlpkg) plugin. See the plugin
+[README](https://github.com/fredrikekre/asdf-jlpkg/blob/master/README.md) for instructions.
 
 
 [pkg-url]: https://github.com/JuliaLang/Pkg.jl
