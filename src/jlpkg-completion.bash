@@ -122,24 +122,25 @@ _jlpkg() {
 
 _jlpkg_julia_toml_file() {
     local file="$1"
-    local julia="julia --startup-file=no --compile=min --optimize=0"
+    local julia="julia"
+    local julia_flags="--startup-file=no --compile=min --optimize=0"
     for item in "${words[@]}"; do
         [[ "$item" == --julia=* ]] && { julia=${item#--julia=}; break; }
     done
     if [[ "$file" == "project" || "$file" == "manifest" ]]; then
-        ${julia} -e '
+        ${julia} ${julia_flags} -e '
             project = Base.active_project()
             project === nothing && exit(1)
-            manifest = if (m = joinpath(dirname(project), "JuliaManifest.toml"); isfile(m))
-                m
+            println(project)
+            if (m = joinpath(dirname(project), "JuliaManifest.toml"); isfile(m))
+                println(m)
             else
-                joinpath(dirname(project), "Manifest.toml")
+                println(joinpath(dirname(project), "Manifest.toml"))
             end
-            print(project, "\n", manifest)
         '
         return $?
     else # [[ "$file" == "registry" ]]
-        ${julia} -e '
+        ${julia} ${julia_flags} -e '
             isempty(DEPOT_PATH) && exit(1)
             regs = String[]
             regdir = joinpath(DEPOT_PATH[1], "registries")
@@ -183,8 +184,8 @@ _jlpkg_complete_in_toml(){
         # Extract package names inside [[*]]
         while IFS='' read -r l; do output+=("$l"); done < <(sed -n 's/^\[\[\(\S*\)\]\]$/\1/p' < "${manifest}")
         if [[ "${include_uuids}" == "true" ]]; then
-           local uuids
-           while IFS='' read -r l; do uuids+=("$l"); done < <(sed -n 's/^uuid\s*=\s*\"\('"${uuid_re}"'\)\"$/\1/p' < "${manifest}")
+            local uuids
+            while IFS='' read -r l; do uuids+=("$l"); done < <(sed -n 's/^uuid\s*=\s*\"\('"${uuid_re}"'\)\"$/\1/p' < "${manifest}")
             [[ "${#output[@]}" == "${#uuids[@]}" ]] || return 1
             for (( i = 0; i < "${#output[@]}"; i++ )); do
                 output[$i]="${output[$i]}=${uuids[$i]}"
