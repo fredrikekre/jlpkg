@@ -37,10 +37,11 @@ function install(; julia::String=joinpath(Sys.BINDIR, Base.julia_exename()),
     mkpath(destdir)
     open(exec, "w") do f
         if Sys.iswindows()
-            # TODO: Find a way to embed the script in the file
             print(f, """
-                @ECHO OFF
-                $(julia) $(join(julia_flags, ' ')) $(abspath(@__DIR__, "cli.jl")) %*
+                @show #= 2>nul
+                @call "$(julia)" $(join(julia_flags, ' ')) "%~dp0%~n0.cmd" %*
+                @exit /b %errorlevel%
+                =#
                 """)
         else # unix
             print(f, """
@@ -49,9 +50,9 @@ function install(; julia::String=joinpath(Sys.BINDIR, Base.julia_exename()),
                 exec $(julia) $(join(julia_flags, ' ')) "\${BASH_SOURCE[0]}" "\$@"
                 =#
                 """)
-            open(abspath(@__DIR__, "cli.jl"), "r") do cli
-                write(f, cli)
-            end
+        end
+        open(abspath(@__DIR__, "cli.jl"), "r") do cli
+            write(f, cli)
         end
     end
     chmod(exec, 0o0100775) # equivalent to -rwxrwxr-x (chmod +x exec)
