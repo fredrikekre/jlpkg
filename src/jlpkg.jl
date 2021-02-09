@@ -37,12 +37,13 @@ function install(; julia::String=joinpath(Sys.BINDIR, Base.julia_exename()),
     mkpath(destdir)
     open(exec, "w") do f
         if Sys.iswindows()
-            print(f, """
+            # cmd header required dos line endings
+            print(f, replace("""
                 @show #= 2>nul
                 @call "$(julia)" $(join(julia_flags, ' ')) "%~dp0%~n0.cmd" %*
                 @exit /b %errorlevel%
                 =#
-                """)
+                """, "\n"=>"\r\n"))
         else # unix
             print(f, """
                 #!/usr/bin/env bash
