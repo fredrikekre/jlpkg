@@ -1,8 +1,8 @@
 # jlpkg
 
-| **Build Status**                                                                                |
-|:----------------------------------------------------------------------------------------------- |
-| [![][travis-img]][travis-url] [![][appveyor-img]][appveyor-url] [![][codecov-img]][codecov-url] |
+| **Build Status**                                        |
+|:------------------------------------------------------- |
+| [![CI][ci-img]][ci-url] [![][codecov-img]][codecov-url] |
 
 A command line interface (CLI) to [Pkg][pkg-url], Julia's package manager.
 
@@ -157,11 +157,8 @@ It is possible to install `jlpkg` using the [`asdf` version manager](https://asd
 
 [pkg-url]: https://github.com/JuliaLang/Pkg.jl
 
-[travis-img]: https://travis-ci.com/fredrikekre/jlpkg.svg?branch=master
-[travis-url]: https://travis-ci.com/fredrikekre/jlpkg
-
-[appveyor-img]: https://ci.appveyor.com/api/projects/status/o1j0uq1j1lk7qnlu/branch/master?svg=true
-[appveyor-url]: https://ci.appveyor.com/project/fredrikekre/jlpkg/branch/master
+[ci-url]: https://github.com/fredrikekre/jlpkg/actions/workflows/ci.yml
+[ci-img]: https://github.com/fredrikekre/jlpkg/actions/workflows/ci.yml/badge.svg
 
 [codecov-img]: https://codecov.io/gh/fredrikekre/jlpkg/branch/master/graph/badge.svg
 [codecov-url]: https://codecov.io/gh/fredrikekre/jlpkg
