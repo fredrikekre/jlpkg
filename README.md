@@ -128,7 +128,7 @@ Keyword arguments:
 It is possible to download and extract a prebuilt script with default settings.
 For example, to download the latest release you can run the following
 ```bash
-$ curl -fsSL https://github.com/fredrikekre/jlpkg/releases/download/v1.3.2/jlpkg-v1.3.2.tar.gz | \
+$ curl -fsSL https://github.com/fredrikekre/jlpkg/releases/download/v1.4.0/jlpkg-v1.4.0.tar.gz | \
   tar -xzC /usr/local/bin
 ```
 This will extract the executable script `jlpkg` and place it in `/usr/local/bin`.
@@ -138,7 +138,7 @@ When using the prebuilt script it is assumed that `julia` is also in your `PATH`
 The Bash completion file can also be downloaded from the repo. For example:
 ```bash
 $ curl -fsSL -o ~/.bash_completion.d/jlpkg-completion.bash \
-  https://raw.githubusercontent.com/fredrikekre/jlpkg/v1.3.2/src/jlpkg-completion.bash
+  https://raw.githubusercontent.com/fredrikekre/jlpkg/v1.4.0/src/jlpkg-completion.bash
 ```
 Make sure to source this file in your shell startup file. For example, add the following to `~/.bashrc`:
 ```bash

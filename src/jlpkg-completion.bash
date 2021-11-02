@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Bash completion for jlpkg version 1.3.2.
+# Bash completion for jlpkg version 1.4.0.
 # See https://github.com/fredrikekre/jlpkg for details.
 
 # Notes to self:
