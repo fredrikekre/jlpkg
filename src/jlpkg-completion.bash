@@ -123,12 +123,12 @@ _jlpkg() {
 _jlpkg_julia_toml_file() {
     local file="$1"
     local julia="julia"
-    local julia_flags="--startup-file=no --compile=min --optimize=0"
+    local julia_flags=(--startup-file=no --compile=min --optimize=0)
     for item in "${words[@]}"; do
         [[ "$item" == --julia=* ]] && { julia=${item#--julia=}; break; }
     done
     if [[ "$file" == "project" || "$file" == "manifest" ]]; then
-        ${julia} ${julia_flags} -e '
+        ${julia} "${julia_flags[@]}" -e '
             project = Base.active_project()
             project === nothing && exit(1)
             println(project)
@@ -140,13 +140,19 @@ _jlpkg_julia_toml_file() {
         '
         return $?
     else # [[ "$file" == "registry" ]]
-        ${julia} ${julia_flags} -e '
+        ${julia} "${julia_flags[@]}" -e '
             isempty(DEPOT_PATH) && exit(1)
             regs = String[]
             regdir = joinpath(DEPOT_PATH[1], "registries")
             for reg in readdir(regdir)
                 f = joinpath(regdir, reg, "Registry.toml")
                 isfile(f) && push!(regs, f)
+                f = joinpath(regdir, reg)
+                if isfile(f) && endswith(f, ".toml") &&
+                   (m = match(r"path\s*=\s*\"(.*)\"", read(f, String)); m !== nothing)
+                    f = joinpath(regdir, m[1])
+                    isfile(f) && push!(regs, f)
+                end
             end
             foreach(r->println(r), regs)
         '
@@ -194,8 +200,13 @@ _jlpkg_complete_in_toml(){
     else # [[ "${file}" == "registry" ]]
         [[ "${include_uuids}" == "true" ]] && out_pat="\2=\1" || out_pat="\2"
         for registry in "${toml_files[@]}"; do
+            if [[ "${registry}" =~ .toml$ ]]; then
+                cmd=(cat "${registry}")
+            else
+                cmd=(tar -xOf "${registry}" Registry.toml)
+            fi
             while IFS='' read -r l; do output+=("$l"); done < <(
-                sed -n -e 's/^\('"${uuid_re}"'\).*name\s*=\s*\"\(.*\)\",.*$/'${out_pat}'/p' < "${registry}"
+                sed -n -e 's/^\('"${uuid_re}"'\).*name\s*=\s*\"\(.*\)\",.*$/'${out_pat}'/p' <("${cmd[@]}")
             )
         done
     fi
