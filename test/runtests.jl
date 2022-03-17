@@ -1,9 +1,12 @@
+# SPDX-License-Identifier: MIT
+
 using jlpkg, Test, Pkg, Pkg.TOML
 
 const root = joinpath(dirname(dirname(pathof(jlpkg))))
 # --compile=yes required due to JuliaLang/julia#37059
+# --code_coverage=@ replaced with "user"
 const test_cmd = ```$(Base.julia_cmd()) $(jlpkg.default_julia_flags)
-    --code-coverage=$(["none", "user", "all"][Base.JLOptions().code_coverage+1])
+    --code-coverage=$(cc = Base.JLOptions().code_coverage; cc == 0 ? "user" : cc == 2 ? "all" : "user")
     --compile=yes
     --color=no
     $(joinpath(root, "src", "cli.jl"))```

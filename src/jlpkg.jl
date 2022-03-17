@@ -1,11 +1,15 @@
+# SPDX-License-Identifier: MIT
+
 module jlpkg
 
-# --compile=min segfaults Julia 1.0 and the fix can't trivially be backported.
-# --color should be removed for the new LTS due to better defaults in Julia >1.5
 @static if VERSION < v"1.1"
+    # --compile=min segfaults Julia 1.0 and the fix can't trivially be backported.
     const default_julia_flags = ["--color=yes", "--startup-file=no", "-q", "-O0"]
-else
+elseif VERSION < v"1.6"
     const default_julia_flags = ["--color=yes", "--startup-file=no", "-q", "--compile=min", "-O0"]
+else
+    # --color handling is automatic for Julia >1.5
+    const default_julia_flags = ["--startup-file=no", "-q", "--compile=min", "-O0"]
 end
 
 """
@@ -20,7 +24,7 @@ Install the command line interface.
  - `destdir`: writable directory (available in PATH) for the executable,
    defaults to `~/.julia/bin`.
  - `julia_flags`: vector with command line flags for the julia executable,
-   defaults to `["--color=yes", "--startup-file=no", "-q", "--compile=min", "-O0"]`.
+   defaults to `$(default_julia_flags)`.
  - `force`: boolean used to overwrite any existing commands.
 """
 function install(; julia::String=joinpath(Sys.BINDIR, Base.julia_exename()),
@@ -39,15 +43,23 @@ function install(; julia::String=joinpath(Sys.BINDIR, Base.julia_exename()),
         if Sys.iswindows()
             # TODO: Find a way to embed the script in the file
             print(f, """
+                :: Copyright (c) 2019-2022 Fredrik Ekre
+                :: SPDX-License-Identifier: MIT
+
                 @ECHO OFF
                 $(julia) $(join(julia_flags, ' ')) $(abspath(@__DIR__, "cli.jl")) %*
                 """)
         else # unix
             print(f, """
                 #!/usr/bin/env bash
+
+                # Copyright (c) 2019-2022 Fredrik Ekre
+                # SPDX-License-Identifier: MIT
+
                 #=
                 exec $(julia) $(join(julia_flags, ' ')) "\${BASH_SOURCE[0]}" "\$@"
                 =#
+
                 """)
             open(abspath(@__DIR__, "cli.jl"), "r") do cli
                 write(f, cli)

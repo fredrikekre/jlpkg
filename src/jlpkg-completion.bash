@@ -2,6 +2,8 @@
 
 # Bash completion for jlpkg version 1.4.0.
 # See https://github.com/fredrikekre/jlpkg for details.
+# Copyright (c) 2019-2022 Fredrik Ekre
+# SPDX-License-Identifier: MIT
 
 # Notes to self:
 # Uses
