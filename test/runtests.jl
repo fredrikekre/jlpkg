@@ -98,6 +98,9 @@ mktempdir() do tmpdir; mktempdir() do depot
                 @test success(pipeline(`$(test_cmd) --julia=$(this_julia) --julia=$(julia11) --version`, stdout=stdout, stderr=stderr))
                 @test occursin(", julia version 1.1.1", read(stdout, String))
                 @test isempty(read(stderr, String))
+                @test success(pipeline(`$(test_cmd) --color=auto --julia=$(julia11) --version`, stdout=stdout, stderr=stderr))
+                @test occursin(", julia version 1.1.1", read(stdout, String))
+                @test isempty(read(stderr, String))
             end
         end
         # Smoke test all Pkg commands in interpreted mode

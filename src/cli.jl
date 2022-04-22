@@ -14,7 +14,6 @@ if !Sys.iswindows()
         cmd = Base.julia_cmd()
         cmd.exec[1] = julia # swap out the executable
         filter!(x -> !startswith(x, "-J"), cmd.exec) # filter out incompatible sysimg
-        push!(cmd.exec, "--color=$(Base.have_color ? "yes" : "no")")
         pipe = pipeline(`$(cmd) $(f) $(ARGS)`; stdout=stdout, stderr=stderr)
         try
             exit(!success(pipe))
