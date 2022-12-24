@@ -9,7 +9,7 @@ const root = joinpath(dirname(dirname(pathof(jlpkg))))
 function coverage_arg_string()
     cc = Base.JLOptions().code_coverage
     if cc < 3
-        ("none", "user", "all")[cc-1]
+        ("none", "user", "all")[cc+1]
     elseif cc == 3
         # path-specific coverage
         "@$(unsafe_string(Base.JLOptions().tracked_path))"
