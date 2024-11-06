@@ -2,15 +2,7 @@
 
 module jlpkg
 
-@static if VERSION < v"1.1"
-    # --compile=min segfaults Julia 1.0 and the fix can't trivially be backported.
-    const default_julia_flags = ["--color=yes", "--startup-file=no", "-q", "-O0"]
-elseif VERSION < v"1.6"
-    const default_julia_flags = ["--color=yes", "--startup-file=no", "-q", "--compile=min", "-O0"]
-else
-    # --color handling is automatic for Julia >1.5
-    const default_julia_flags = ["--startup-file=no", "-q", "--compile=min", "-O0"]
-end
+const default_julia_flags = ["--startup-file=no", "-q"]
 
 """
     jlpkg.install(; kwargs...)

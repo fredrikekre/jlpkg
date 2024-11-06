@@ -29,7 +29,7 @@ end
 
 # Parse --version option
 if "--version" in JLPKG_ARGS
-    println(stdout, "jlpkg version 1.5.1, julia version $(VERSION)")
+    println(stdout, "jlpkg version 1.6.0, julia version $(VERSION)")
     exit(0)
 end
 
@@ -169,17 +169,6 @@ end
 # Disable automatic precompilation unless user explicitly has asked for it
 if get(ENV, "JULIA_PKG_PRECOMPILE_AUTO", nothing) !== "1"
     ENV["JULIA_PKG_PRECOMPILE_AUTO"] = "0"
-end
-
-# Swap out --compile=min and --optimize=0 if we are running tests
-# or precompiling since we don't want that to propagate to those subprocesses,
-# and packages expect, and should be, tested/precompiled with default options.
-if "test" in PKG_REPL_ARGS || "precompile" in PKG_REPL_ARGS
-    o = Base.JLOptions()
-    o′ = Base.JLOptions((x === :compile_enabled ? Int8(1) :
-        x === :opt_level ? Int8(2) :
-        getfield(o, x) for x in fieldnames(Base.JLOptions))...)
-    unsafe_store!(cglobal(:jl_options, Base.JLOptions), o′)
 end
 
 # Run Pkg REPL mode with PKG_REPL_ARGS
