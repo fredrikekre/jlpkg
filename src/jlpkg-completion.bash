@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Bash completion for jlpkg version 1.5.1.
+# Bash completion for jlpkg version 1.6.0.
 # See https://github.com/fredrikekre/jlpkg for details.
 # Copyright (c) 2019-2022 Fredrik Ekre
 # SPDX-License-Identifier: MIT
