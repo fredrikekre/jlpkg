@@ -100,15 +100,16 @@ mktempdir() do tmpdir; mktempdir() do depot
             @test isempty(read(stdout, String))
             @test occursin("Error: IOError: could not spawn `juliafoobar", read(stderr, String))
             if Sys.islinux() && get(ENV, "CI", nothing) == "true"
-                julia11 = download_release(v"1.1.1")
-                @test success(pipeline(`$(test_cmd) --julia=$(julia11) --version`, stdout=stdout, stderr=stderr))
-                @test occursin(", julia version 1.1.1", read(stdout, String))
+                vnum = v"1.9.4"
+                other_julia = download_release(vnum)
+                @test success(pipeline(`$(test_cmd) --julia=$(other_julia) --version`, stdout=stdout, stderr=stderr))
+                @test occursin(", julia version $(vnum)", read(stdout, String))
                 @test isempty(read(stderr, String))
-                @test success(pipeline(`$(test_cmd) --julia=$(this_julia) --julia=$(julia11) --version`, stdout=stdout, stderr=stderr))
-                @test occursin(", julia version 1.1.1", read(stdout, String))
+                @test success(pipeline(`$(test_cmd) --julia=$(this_julia) --julia=$(other_julia) --version`, stdout=stdout, stderr=stderr))
+                @test occursin(", julia version $(vnum)", read(stdout, String))
                 @test isempty(read(stderr, String))
-                @test success(pipeline(`$(test_cmd) --color=auto --julia=$(julia11) --version`, stdout=stdout, stderr=stderr))
-                @test occursin(", julia version 1.1.1", read(stdout, String))
+                @test success(pipeline(`$(test_cmd) --color=auto --julia=$(other_julia) --version`, stdout=stdout, stderr=stderr))
+                @test occursin(", julia version $(vnum)", read(stdout, String))
                 @test isempty(read(stderr, String))
             end
         end
