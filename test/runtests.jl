@@ -5,8 +5,19 @@ using jlpkg, Test, Pkg, Pkg.TOML
 const root = joinpath(dirname(dirname(pathof(jlpkg))))
 # --compile=yes required due to JuliaLang/julia#37059
 # --code_coverage=@ replaced with "user"
+
+function coverage_arg_string()
+    cc = Base.JLOptions().code_coverage
+    if cc < 3
+        ("none", "user", "all")[cc+1]
+    elseif cc == 3
+        # path-specific coverage
+        "@$(unsafe_string(Base.JLOptions().tracked_path))"
+    end
+end
+        
 const test_cmd = ```$(Base.julia_cmd()) $(jlpkg.default_julia_flags)
-    --code-coverage=$(cc = Base.JLOptions().code_coverage; cc == 0 ? "user" : cc == 2 ? "all" : "user")
+    --code-coverage=$(coverage_arg_string())
     --compile=yes
     --color=no
     $(joinpath(root, "src", "cli.jl"))```
