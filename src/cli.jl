@@ -137,7 +137,7 @@ end
 # Load Pkg; circumvent user-modified LOAD_PATH
 const ORIG_LOAD_PATH = copy(Base.LOAD_PATH)
 try
-    push!(empty!(Base.LOAD_PATH), joinpath(Sys.STDLIB, "Pkg"))
+    push!(empty!(Base.LOAD_PATH), "@stdlib")
     using Pkg
 catch
     printstyled(stderr, "Error: "; bold=true, color=:red)
